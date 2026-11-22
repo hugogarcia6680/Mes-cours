@@ -716,6 +716,9 @@ figure.sheet figcaption{display:flex;justify-content:space-between;gap:8px;font-
 .vimg.zoom{place-items:start}.vimg.zoom img{max-width:none;max-height:none;width:220%}
 .vhint{color:rgba(255,255,255,.5);font-size:12.5px;text-align:center;padding:6px 0 calc(10px + env(safe-area-inset-bottom))}
 @media print{figure.sheet{max-width:100%;break-inside:avoid;border:none;padding:0;box-shadow:none}figure.sheet figcaption{display:none}.fimgs{grid-template-columns:1fr 1fr}.viewer{display:none!important}}
+
+.seg.bar{display:flex;width:100%}.seg.bar button{flex:1;padding:9px 0;font-size:15px}
+.gin{position:relative}.gin .gsur{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:16px;pointer-events:none}
 </style></head><body>
 <div id="splash" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 <div class="logo"><svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="perspective:200px">
@@ -952,9 +955,9 @@ function noteRow(n,s,showSub){
  const prev=(n.body||'').replace(/\s+/g,' ').trim().slice(0,90)||'Cours vide';
  return `<div class="item" onclick="go('note','${s.id}','${n.id}')"><span class="dot" style="background:${s.color}22">${s.emoji}</span><div class="body"><div class="t">${E(n.title)}</div><div class="m">${showSub?E(s.name)+' · ':''}${E(prev)}</div></div><span class="dt">${new Date(n.edited||n.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span><button class="icon-btn" onclick="event.stopPropagation();delNote('${s.id}','${n.id}')" aria-label="Supprimer" title="Supprimer ce cours">${ic('trash')}</button></div>`;
 }
-function gradePills(gs){return `<div class="pills">${gs.map(g=>`<button class="gp" onclick="gradeModal(null,'${g.id}')"><b style="color:${aCol(g20(g))}">${fmtN(g.val)}<small>/${fmtN(g.max)}</small></b><span>${E(g.title||'Note')}${g.coef!=1?` · coef ${fmtN(g.coef)}`:''}</span><span>${new Date(g.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span></button>`).join('')}</div>`}
-const simHtml=sid=>`<div class="sim" data-sid="${sid}">🔮 Si j'ai <input class="sv" inputmode="decimal" value="15"> /20, coef <input class="sc" inputmode="decimal" value="1"> → nouvelle moyenne <b class="so">–</b></div>`;
-function bindSims(){M.querySelectorAll('.sim').forEach(el=>{const f=()=>{const sid=el.dataset.sid,v=num(el.querySelector('.sv').value),c=num(el.querySelector('.sc').value),o=el.querySelector('.so');
+function gradePills(gs){return `<div class="pills">${gs.map(g=>`<button class="gp" onclick="gradeModal(null,'${g.id}')"><b style="color:${aCol(g20(g))}">${fmtN(g.val)}<small>/${fmtN(g.max)}</small></b>${g.max!=20?`<span>= ${fmtA(g20(g))}/20</span>`:''}<span>${E(g.title||'Note')}${g.coef!=1?` · coef ${fmtN(g.coef)}`:''}</span><span>${new Date(g.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span></button>`).join('')}</div>`}
+const simHtml=sid=>`<div class="sim" data-sid="${sid}">🔮 Si j'ai <input class="sv" inputmode="decimal" value="15"> / <input class="sm" inputmode="decimal" value="20">, coef <input class="sc" inputmode="decimal" value="1"> → nouvelle moyenne <b class="so">–</b></div>`;
+function bindSims(){M.querySelectorAll('.sim').forEach(el=>{const f=()=>{const sid=el.dataset.sid,smx=num(el.querySelector('.sm').value),v=num(el.querySelector('.sv').value)/(smx>0?smx:NaN)*20,c=num(el.querySelector('.sc').value),o=el.querySelector('.so');
  const gs=D.grades.filter(g=>g.sub==sid&&(!D.per||g.per==D.per));let s=0,k=0;gs.forEach(g=>{s+=g20(g)*g.coef;k+=g.coef});
  if(isNaN(v)||isNaN(c)||k+c<=0){o.textContent='–';return}const r=(s+v*c)/(k+c),old=k?s/k:null;
  o.innerHTML=`<span style="color:${aCol(r)}">${fmtA(r)}</span>${old!=null?` <small>(${r>=old?'+':''}${(r-old).toFixed(2).replace('.',',')})</small>`:''}`};
@@ -1309,7 +1312,8 @@ function gradeModal(pre,id){if(!needSubs())return;pre=pre||{};const g0=id?D.grad
  const v=g0||{sub:pre.sub||view.open||(view.v=='sub'?view.s:'')||D.subs[0].id,val:'',max:20,coef:1,title:'',date:iso(new Date()),per:D.per||1};
  modal(g0?'Modifier la note':'Nouvelle note',
   F('Matière',subSel('m-s',v.sub))+
-  `<div class="r3">${F('Note',`<input class="field big" id="m-v" inputmode="decimal" value="${v.val===''?'':fmtN(v.val)}" placeholder="15">`)}${F('Sur',`<input class="field" id="m-m" inputmode="decimal" value="${fmtN(v.max)}">`)}${F('Coef',`<input class="field" id="m-c" inputmode="decimal" value="${fmtN(v.coef)}">`)}</div>`+
+  F('Noté sur',`<div class="seg bar" id="m-ms">${[5,10,20,40,100].map(x=>`<button type="button" data-m="${x}" class="${v.max==x?'on':''}">/${x}</button>`).join('')}<button type="button" data-m="autre" class="${[5,10,20,40,100].includes(+v.max)?'':'on'}">Autre</button></div>`)+
+  `<div class="r3">${F('Note',`<div class="gin"><input class="field big" id="m-v" inputmode="decimal" value="${v.val===''?'':fmtN(v.val)}" placeholder="15"><span class="gsur" id="m-sur">/ ${fmtN(v.max)}</span></div>`)}${F('Sur',`<input class="field" id="m-m" inputmode="decimal" value="${fmtN(v.max)}">`)}${F('Coef',`<input class="field" id="m-c" inputmode="decimal" value="${fmtN(v.coef)}">`)}</div><div class="rm" id="m-20" style="margin-top:-4px"></div>`+
   F('Intitulé',`<input class="field" id="m-t" value="${E(v.title)}" placeholder="Ex : Contrôle chapitre 3">`)+
   `<div class="r2">${F('Date',`<input class="field" id="m-d" type="date" value="${v.date}">`)}${F('Période',`<select class="field" id="m-p">${[1,2,3].map(p=>`<option value="${p}" ${p==v.per?'selected':''}>Trimestre ${p}</option>`).join('')}</select>`)}</div>`,
   {ok:g0?'Enregistrer':'Ajouter',
@@ -1320,7 +1324,13 @@ function gradeModal(pre,id){if(!needSubs())return;pre=pre||{};const g0=id?D.grad
     const o={sub:g('m-s').value,val,max,coef:isNaN(coef)||coef<0?1:coef,title:g('m-t').value.trim(),date:g('m-d').value||iso(new Date()),per:+g('m-p').value};
     if(g0)Object.assign(g0,o);else D.grades.push({id:uid(),...o});save();const s=subOf(o.sub),a=subAvg(s.id,o.per);
     toast(`${g0?'Note modifiée':'Note ajoutée'} · ${s.name} : ${fmtA(a)} de moyenne`);animate=false;render()},
-   onDel:g0?()=>{D.grades=D.grades.filter(x=>x.id!=id);save();toast('Note supprimée');animate=false;render()}:null})}
+   onDel:g0?()=>{D.grades=D.grades.filter(x=>x.id!=id);save();toast('Note supprimée');animate=false;render()}:null,
+   init:g=>{const ms=g('m-ms'),mm=g('m-m'),mv=g('m-v'),sur=g('m-sur'),o20=g('m-20');
+    const upd20=()=>{const a=num(mv.value),b=num(mm.value);sur.textContent='/ '+(isNaN(b)?'?':fmtN(b));
+     o20.innerHTML=!isNaN(a)&&b>0&&b!=20?`Soit <b style="color:${aCol(a/b*20)}">${fmtA(a/b*20)} / 20</b>`:'';
+     ms.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.m==(String([5,10,20,40,100].includes(b)?b:'autre'))))};
+    ms.onclick=e=>{const k=e.target.closest('[data-m]');if(!k)return;if(k.dataset.m=='autre'){mm.focus();mm.select()}else{mm.value=k.dataset.m;mv.focus()}upd20()};
+    mm.oninput=upd20;mv.oninput=upd20;upd20()}})}
 function slotModal(id,kind,date){if(!needSubs())return;const isEv=kind=='ev',o=id?(isEv?D.events:D.slots).find(x=>x.id==id):null,key=o&&!isEv&&date?id+'|'+date:null,ex=key?D.exc[key]||{}:null;
  const v=o||{sub:(view.v=='sub'&&view.s)||D.subs[0].id,day:Math.min(Math.max(new Date().getDay(),1),5),start:'07:55',end:'08:50',room:'',teacher:''};
  modal(o?'Modifier le cours':'Ajouter à l\'emploi du temps',
