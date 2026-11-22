@@ -5,7 +5,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MesCours">
-<meta name="theme-color" content="#f6f7fb">
+<meta name="theme-color" content="#f7f7f5">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACrklEQVR4Xu3bUW7iMBSGUVrNBpJtsApWzgP7mTWMVEs8TWh+IuQb+5xnWqz29oudhq9lWS7wP99+LGwxHBgOcsqBcpBTDpSDnHKgHOSUA+UgpxwoBznlQDnIKQfKQU45UA5yyoFykFMOlIOccqAc5JQD5SCnHCgHOeVAOcgpB8pBTjlQDnJ/8i/5rMfjsf8Nrtfr/hfXsa5rncW84LLSwd8fHd44ZDi6qT8ihqOzygkxHP2VnQ/DUULN+TAcuM9RXsF4KAfKcQbV4qEcKAc55UA5yCkHykFOOVAOcsqBcpBTDpSDnHKgHOSUA+UgpxwoBznlQDnIlfuU/YfcbrcPfedf3e/3X19T0/jD0XEsmraAM46IPQez7jm6Z+Opzkr2Uw5mLQdHDF6OOtvAOivZb/Dh4Ijxj7LtT7bjfvCMzWjGH47mvL+hjlxWcFohpxwoBznlQDnIKQfKQU45UA5ys9w+97+VN4w/HB3HovEMKQMafEPaPRtPdVay3+DDwRGGg1mPsnWe8amzkv2Ug03jH2U9Q/q28YejOWPVu3NZYdYNKUcoB8pBTjlQDnLKgXKQUw6Ug9wst887Pmtz3jv34w9Hx7FoPEPKgAbfkHbPxlOdlew3+HBwhOFg1qNsnZNCnZXspxxsGv8o6xnSt40/HM0Zq96dywqzbkg5QjlQDnLKgXKQUw6Ug5xyoBzklAPlIKccKAc55UA5yCkHykFOOVAOcspRyLquhVZzMRy4rNRXLRvKwSv2HCUUzIZylFBzMgxHf2Un43KZ5rOyBVUei2aWD1KXUn8smq9lWUr94KjDaYVNhgPDQU45UA5yyoFykFMOlIOccqAc5JQD5SCnHCgHOeVAOcgpB8pBTjlQDnLKgXKQUw6Ug5xyoBzklAPlIKccKAc55UA5yCkHm/4BiIVcNlaE/dAAAAAASUVORK5CYII=">
 <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACrklEQVR4Xu3bUW7iMBSGUVrNBpJtsApWzgP7mTWMVEs8TWh+IuQb+5xnWqz29oudhq9lWS7wP99+LGwxHBgOcsqBcpBTDpSDnHKgHOSUA+UgpxwoBznlQDnIKQfKQU45UA5yyoFykFMOlIOccqAc5JQD5SCnHCgHOeVAOcgpB8pBTjlQDnJ/8i/5rMfjsf8Nrtfr/hfXsa5rncW84LLSwd8fHd44ZDi6qT8ihqOzygkxHP2VnQ/DUULN+TAcuM9RXsF4KAfKcQbV4qEcKAc55UA5yCkHykFOOVAOcsqBcpBTDpSDnHKgHOSUA+UgpxwoBznlQDnIlfuU/YfcbrcPfedf3e/3X19T0/jD0XEsmraAM46IPQez7jm6Z+Opzkr2Uw5mLQdHDF6OOtvAOivZb/Dh4Ijxj7LtT7bjfvCMzWjGH47mvL+hjlxWcFohpxwoBznlQDnIKQfKQU45UA5ys9w+97+VN4w/HB3HovEMKQMafEPaPRtPdVay3+DDwRGGg1mPsnWe8amzkv2Ug03jH2U9Q/q28YejOWPVu3NZYdYNKUcoB8pBTjlQDnLKgXKQUw6Ug9wst887Pmtz3jv34w9Hx7FoPEPKgAbfkHbPxlOdlew3+HBwhOFg1qNsnZNCnZXspxxsGv8o6xnSt40/HM0Zq96dywqzbkg5QjlQDnLKgXKQUw6Ug5xyoBzklAPlIKccKAc55UA5yCkHykFOOVAOcspRyLquhVZzMRy4rNRXLRvKwSv2HCUUzIZylFBzMgxHf2Un43KZ5rOyBVUei2aWD1KXUn8smq9lWUr94KjDaYVNhgPDQU45UA5yyoFykFMOlIOccqAc5JQD5SCnHCgHOeVAOcgpB8pBTjlQDnLKgXKQUw6Ug5xyoBzklAPlIKccKAc55UA5yCkHm/4BiIVcNlaE/dAAAAAASUVORK5CYII=">
 <title>MesCours</title>
@@ -1616,4 +1617,9 @@ function calcShow(final,err){const ce=$('#ce'),cr=$('#cr');if(!ce)return;
 function calcInsert(){if(!$('#ed'))return;let txt;if(cDone){cmd('insertText',`${cExpr} = ${fmtNum(CS.ans)} `);toast('Calcul inséré ✓');return}try{const r=calcEval(cExpr);if(r==null){toast('Fais un calcul d\'abord');return}txt=`${cExpr} = ${fmtNum(r)}`}catch(e){toast(e.message);return}
  cmd('insertText',txt+' ');toast('Calcul inséré ✓')}
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()=='k'){e.preventDefault();go('search')}});
+
+/* ---------- Hors ligne ---------- */
+if('serviceWorker' in navigator&&(location.protocol=='https:'||location.hostname=='localhost'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+addEventListener('offline',()=>toast('Pas d\'internet : MesCours marche quand même ✓'));
+addEventListener('online',()=>toast('De retour en ligne'));
 </script></body></html>
