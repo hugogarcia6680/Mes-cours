@@ -719,6 +719,50 @@ figure.sheet figcaption{display:flex;justify-content:space-between;gap:8px;font-
 
 .seg.bar{display:flex;width:100%}.seg.bar button{flex:1;padding:9px 0;font-size:15px}
 .gin{position:relative}.gin .gsur{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:16px;pointer-events:none}
+
+/* ---------- Feuille modifiable ---------- */
+.sh-pages{display:flex;flex-direction:column;gap:20px;align-items:center}
+.spage{position:relative;width:100%;max-width:900px;container-type:inline-size;background:#fff;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,.12),0 0 0 1px var(--line);overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.spage>img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.sh-ink{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+.sh-it{position:absolute;z-index:3}
+.sh-mask{background:#fff}
+.sh-hl{background:rgba(255,214,10,.45);mix-blend-mode:multiply}
+.sh-txt{z-index:6;font-family:Arial,Helvetica,sans-serif;line-height:1.2;white-space:pre-wrap;word-break:break-word;outline:none;padding:0 .1em;user-select:text;-webkit-user-select:text;cursor:text;border-radius:2px;color:#111}
+.sh-txt.sh-white{background:#fff}
+.sh-txt:focus{box-shadow:0 0 0 2px var(--accent)}
+.sh-line{position:absolute;z-index:5;border-radius:4px;cursor:text;background:rgba(37,99,235,.05);box-shadow:inset 0 0 0 1.5px rgba(37,99,235,.3);transition:background .15s}
+.sh-line:hover{background:rgba(37,99,235,.15)}
+.sh-pages:not([data-mode=write]) .sh-line{display:none}
+.sh-pages[data-mode=mask] .spage,.sh-pages[data-mode=hl] .spage,.sh-pages[data-mode=pen] .spage{touch-action:none;cursor:crosshair}
+.sh-pages[data-mode=mask] .sh-it:not(.tmp),.sh-pages[data-mode=hl] .sh-it:not(.tmp),.sh-pages[data-mode=pen] .sh-it{pointer-events:none}
+.sh-pages[data-mode=move] .sh-it{cursor:move;touch-action:none}
+.sh-pages[data-mode=move] .sh-mask{box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.sh-pages[data-mode=move] .sh-txt{box-shadow:inset 0 0 0 1px rgba(37,99,235,.35)}
+.sh-it.sel{outline:2px dashed var(--accent);outline-offset:2px}
+.sh-it.tmp{outline:2px dashed var(--accent)}
+.sh-pdel{position:absolute;top:8px;right:8px;z-index:8;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.2);display:grid;place-items:center;color:#c00}
+.sh-pdel svg{width:18px;height:18px}
+.sh-st{font-size:14px;color:var(--muted);margin:-8px 0 14px;min-height:20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sh-st button{color:var(--accent);font-weight:700;text-decoration:underline}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sh-c i{display:block;width:18px;height:18px;border-radius:50%;box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--line)}
+.tb-b.sh-c.on{background:var(--accent-soft)}
+.crop{background:var(--panel);border-radius:24px;padding:20px;width:auto;max-width:calc(100vw - 32px);box-shadow:0 30px 80px rgba(0,0,0,.35);animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+.crop-area{position:relative;margin:0 auto;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;border-radius:8px;background:#000}
+.crop-area canvas{display:block;width:100%;height:auto}
+.crop-box{position:absolute;box-shadow:0 0 0 9999px rgba(0,0,0,.55);outline:2px solid #fff}
+.crop-box i{position:absolute;width:30px;height:30px;background:#fff;border-radius:50%;border:3px solid #111;transform:translate(-50%,-50%);touch-action:none;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.crop-box i[data-c=nw]{left:0;top:0}.crop-box i[data-c=ne]{left:100%;top:0}.crop-box i[data-c=sw]{left:0;top:100%}.crop-box i[data-c=se]{left:100%;top:100%}
+@media print{
+ [data-sheet] .title-in,[data-sheet] .print-head,[data-sheet] .meta{display:none!important}
+ .sh-line,.sh-st,#shtb,.sh-pdel{display:none!important}
+ .sh-it.sel,.sh-it.tmp{outline:none!important}.sh-txt:focus{box-shadow:none!important}
+ .sh-pages{gap:0;display:block}
+ .spage{box-shadow:none!important;border-radius:0!important;margin:0 auto!important;width:min(100%,calc(262mm * var(--ar)))!important;max-width:none!important;break-after:page;break-inside:avoid}
+ .spage:last-child{break-after:auto}
+}
 </style></head><body>
 <div id="splash" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 <div class="logo"><svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="perspective:200px">
@@ -880,11 +924,12 @@ function topbar(){return `<div class="topbar"><button class="qbtn" onclick="go('
  <button class="qbtn phone" onclick="go('settings')" aria-label="Réglages">${ic('gear')}</button></div>`}
 function newMenu(btn){pop(btn,`<div class="lab">Créer</div>
  <button class="opt" data-k="cours">📝 Un cours</button><button class="opt" data-k="task">✅ Un devoir</button><button class="opt" data-k="grade">🎯 Une note</button>
- <button class="opt" data-k="slot">🕒 Un cours dans l'emploi du temps</button><button class="opt" data-k="sub">📚 Une matière</button>`,
- b=>{const k=b.dataset.k;setTimeout(()=>{if(k=='cours')quickNote(btn);else if(k=='task')taskModal();else if(k=='grade')gradeModal();else if(k=='slot')slotModal();else subModal()},20)})}
+ <button class="opt" data-k="slot">🕒 Un cours dans l'emploi du temps</button><button class="opt" data-k="sub">📚 Une matière</button><button class="opt" data-k="scansheet">📷 Scanner une feuille à modifier</button>`,
+ b=>{const k=b.dataset.k;setTimeout(()=>{if(k=='scansheet'){if((view.v=='sub'||view.v=='note')&&subOf(view.s))return scanSheet(view.s);return setTimeout(()=>scanPick(btn),20)}
+ if(k=='cours')quickNote(btn);else if(k=='task')taskModal();else if(k=='grade')gradeModal();else if(k=='slot')slotModal();else subModal()},20)})}
 function quickNote(btn){if(!D.subs.length)return subModal();if(D.subs.length==1)return newNote(D.subs[0].id);
  pop(btn,'<div class="lab">Dans quelle matière ?</div>'+D.subs.map(s=>`<button class="opt" data-s="${s.id}">${s.emoji} ${E(s.name)}</button>`).join(''),b=>newNote(b.dataset.s))}
-function render(){nav();({home,edt,subs:subsView,sub,note,agenda,notes:notesView,search,settings,fiche,revisions})[view.v]();
+function render(){delete M.dataset.sheet;nav();({home,edt,subs:subsView,sub,note,agenda,notes:notesView,search,settings,fiche,revisions})[view.v]();
  if(view.v!='note')M.insertAdjacentHTML('afterbegin',topbar());
  {const w=document.getElementById('cinsw');if(w)w.style.display=view.v=='note'?'':'none'}
  bindSims();hydrate(M);
@@ -929,7 +974,7 @@ function home(){
 function subsView(){
  const total=D.subs.reduce((n,s)=>n+s.notes.length,0);
  const recent=D.subs.flatMap(s=>s.notes.map(n=>({...n,s}))).sort((a,b)=>(b.edited||b.date)-(a.edited||a.date)).slice(0,6);
- M.innerHTML=`<div class="page-head"><div><h1>Cours</h1><p class="sub">${D.subs.length} matière${D.subs.length>1?'s':''} · ${total} cours</p></div><button class="btn" onclick="subModal()">${ic('plus')}Nouvelle matière</button></div>
+ M.innerHTML=`<div class="page-head"><div><h1>Cours</h1><p class="sub">${D.subs.length} matière${D.subs.length>1?'s':''} · ${total} cours</p></div><div class="ph-r"><button class="btn ghost" data-pop onclick="scanPick(this)">📷 Scanner une feuille</button><button class="btn" onclick="subModal()">${ic('plus')}Nouvelle matière</button></div></div>
  <div class="sgrid">${D.subs.map(s=>{const a=subAvg(s.id,D.per),nc=nextClass(s.id,0);
   return `<div class="scard" style="--c:${s.color}" onclick="go('sub','${s.id}')"><div class="top"><span class="dot big" style="background:${s.color}22">${s.emoji}</span>${a!=null?`<span class="avg" style="color:${aCol(a)}">${fmtA(a)}</span>`:''}</div><div class="t">${E(s.name)}</div><div class="m">${s.notes.length} cours${nc?` · ${dayLabel(nc.date).split(' ')[0].toLowerCase()} ${fmtH(nc.c.start)}`:''}</div></div>`}).join('')}
  <button class="scard add" onclick="subModal()">${ic('plus')}<span>Nouvelle matière</span></button></div>
@@ -942,7 +987,7 @@ function sub(){
  const ts=D.tasks.filter(x=>x.sub==s.id).sort((x,y)=>(x.ok-y.ok)||x.date.localeCompare(y.date)),todo=ts.filter(x=>!x.ok).length;
  const gs=D.grades.filter(g=>g.sub==s.id&&(!D.per||g.per==D.per)).sort((x,y)=>y.date.localeCompare(x.date));
  let body;
- if(t=='cours')body=`<div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="newNote('${s.id}')">${ic('plus')}Nouveau cours</button><button class="btn ghost" onclick="scanNew('${s.id}')">📷 Scanner une feuille</button></div>${ns.length?`<div class="list">${ns.map(n=>noteRow(n,s)).join('')}</div>`:`<div class="card empty"><div class="e">📝</div>Pas encore de cours en ${E(s.name)}.</div>`}`;
+ if(t=='cours')body=`<div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="newNote('${s.id}')">${ic('plus')}Nouveau cours</button><button class="btn ghost" onclick="scanSheet('${s.id}')">📷 Scanner une feuille</button></div>${ns.length?`<div class="list">${ns.map(n=>noteRow(n,s)).join('')}</div>`:`<div class="card empty"><div class="e">📝</div>Pas encore de cours en ${E(s.name)}.</div>`}`;
  else if(t=='dev')body=`<div style="margin-bottom:14px"><button class="btn" onclick="taskModal({sub:'${s.id}'})">${ic('plus')}Ajouter un devoir</button></div>${ts.length?`<div class="list">${ts.map(taskRow).join('')}</div>`:`<div class="card empty"><div class="e">✅</div>Aucun devoir en ${E(s.name)}.</div>`}`;
  else if(t=='fiches'){const all=ns.flatMap(cardsFor);body=ns.length?`<div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">${all.length?`<button class="btn" onclick="startQuiz('${s.id}')">🧠 Réviser toute la matière · ${all.length} cartes</button>`:''}${mBar(mastery(all))}</div><div class="list">${ns.map(n=>{const c=cardsFor(n);return `<div class="item" onclick="go('fiche','${s.id}','${n.id}')"><div class="body"><div class="t">${E(n.title)}</div><div class="m">${c.length?`${c.length} cartes · ${mastery(c)}% maîtrisé`:'Fiche simple (pas encore de cartes)'}</div></div><button class="btn sm ghost" onclick="event.stopPropagation();go('fiche','${s.id}','${n.id}')">Fiche</button>${c.length?`<button class="btn sm" onclick="event.stopPropagation();startQuiz('${s.id}','${n.id}')">Réviser</button>`:''}</div>`}).join('')}</div>`:`<div class="card empty"><div class="e">🧠</div>Écris un cours en ${E(s.name)} pour avoir ta fiche.</div>`}
  else body=`<div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn" onclick="gradeModal({sub:'${s.id}'})">${ic('plus')}Ajouter une note</button>${perSeg()}</div><div class="card">${gs.length?gradePills(gs):'<div class="rm">Aucune note pour cette période.</div>'}${simHtml(s.id)}</div>`;
@@ -953,7 +998,7 @@ function sub(){
  <div class="seg" style="margin-bottom:16px">${[['cours','📝 Cours',s.notes.length],['fiches','🧠 Fiches',0],['dev','✅ Devoirs',todo],['notes','🎯 Notes',gs.length]].map(([k,l,n])=>`<button class="${t==k?'on':''}" onclick="setV({t:'${k}'})">${l}${n?` <span class="n">${n}</span>`:''}</button>`).join('')}</div>${body}`}
 function noteRow(n,s,showSub){
  const prev=(n.body||'').replace(/\s+/g,' ').trim().slice(0,90)||'Cours vide';
- return `<div class="item" onclick="go('note','${s.id}','${n.id}')"><span class="dot" style="background:${s.color}22">${s.emoji}</span><div class="body"><div class="t">${E(n.title)}</div><div class="m">${showSub?E(s.name)+' · ':''}${E(prev)}</div></div><span class="dt">${new Date(n.edited||n.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span><button class="icon-btn" onclick="event.stopPropagation();delNote('${s.id}','${n.id}')" aria-label="Supprimer" title="Supprimer ce cours">${ic('trash')}</button></div>`;
+ return `<div class="item" onclick="go('note','${s.id}','${n.id}')"><span class="dot" style="background:${s.color}22">${s.emoji}</span><div class="body"><div class="t">${n.type=='sheet'?'📷 ':''}${E(n.title)}</div><div class="m">${showSub?E(s.name)+' · ':''}${n.type=='sheet'?`${n.pages.length} page${n.pages.length>1?'s':''} · `:''}${E(prev)}</div></div><span class="dt">${new Date(n.edited||n.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span><button class="icon-btn" onclick="event.stopPropagation();delNote('${s.id}','${n.id}')" aria-label="Supprimer" title="Supprimer ce cours">${ic('trash')}</button></div>`;
 }
 function gradePills(gs){return `<div class="pills">${gs.map(g=>`<button class="gp" onclick="gradeModal(null,'${g.id}')"><b style="color:${aCol(g20(g))}">${fmtN(g.val)}<small>/${fmtN(g.max)}</small></b>${g.max!=20?`<span>= ${fmtA(g20(g))}/20</span>`:''}<span>${E(g.title||'Note')}${g.coef!=1?` · coef ${fmtN(g.coef)}`:''}</span><span>${new Date(g.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span></button>`).join('')}</div>`}
 const simHtml=sid=>`<div class="sim" data-sid="${sid}">🔮 Si j'ai <input class="sv" inputmode="decimal" value="15"> / <input class="sm" inputmode="decimal" value="20">, coef <input class="sc" inputmode="decimal" value="1"> → nouvelle moyenne <b class="so">–</b></div>`;
@@ -974,6 +1019,7 @@ let lastRange=null,curPop=null,curNote=null;
 
 function note(){
  const s=subOf(view.s),n=s&&s.notes.find(x=>x.id==view.n);if(!n)return go('home');curNote=n;
+ if(n.type=='sheet')return sheetView(s,n);
  if(n.html==null)n.html=toHtml(n.body||'');
  const B=(a,lab,title)=>`<button class="tb-b" data-a="${a}" title="${title||''}" aria-label="${title||a}">${lab}</button>`,sep='<span class="tb-sep"></span>';
  M.innerHTML=`<div class="editor-bar"><button class="icon-btn" onclick="go('sub','${s.id}')" aria-label="Retour">${ic('back')}</button>
@@ -1532,8 +1578,8 @@ async function addSheets(inp,scan){const files=[...inp.files];inp.value='';if(!f
    fig.innerHTML=`<img alt="Feuille"><figcaption><span>${scan?'📄 Feuille':'🖼️ Photo'} · ${new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span><span>Touche pour agrandir</span></figcaption>`;
    restore();insertBlock(fig);hydrate(fig)}catch(e){toast('Impossible de lire cette image')}}
  upd();toast(files.length>1?`${files.length} feuilles ajoutées ✓`:(scan?'Feuille ajoutée ✓':'Photo ajoutée ✓'))}
-function sheetMenu(btn){pop(btn,`<div class="lab">Ajouter une feuille</div><button class="opt" data-k="scan">📄 Scanner une feuille <small style="color:var(--muted)">noir et blanc, bien lisible</small></button><button class="opt" data-k="photo">🖼️ Ajouter une photo <small style="color:var(--muted)">en couleur</small></button>`,
- b=>$(b.dataset.k=='scan'?'#fin-scan':'#fin-photo').click())}
+function sheetMenu(btn){pop(btn,`<div class="lab">Ajouter une feuille</div><button class="opt" data-k="sheet">📝 Feuille modifiable <small style="color:var(--muted)">la même feuille, que tu peux modifier</small></button><button class="opt" data-k="scan">📄 Scanner une feuille <small style="color:var(--muted)">noir et blanc, bien lisible</small></button><button class="opt" data-k="photo">🖼️ Ajouter une photo <small style="color:var(--muted)">en couleur</small></button>`,
+ b=>b.dataset.k=='sheet'?scanSheet(view.s):$(b.dataset.k=='scan'?'#fin-scan':'#fin-photo').click())}
 function scanNew(sid){newNote(sid);const i=$('#fin-scan');if(i)i.click()}
 function openViewer(fig,editable){const id=fig.dataset.img;const v=document.createElement('div');v.className='viewer';
  v.innerHTML=`<div class="vbar"><button data-v="rot">⟳ Tourner</button><button data-v="dl">⬇︎ Enregistrer</button>${editable?'<button data-v="del">🗑️ Supprimer</button>':''}<button data-v="x">✕ Fermer</button></div><div class="vimg"><img alt="Feuille"></div><div class="vhint">Touche deux fois pour zoomer · pince pour agrandir</div>`;
@@ -1547,8 +1593,178 @@ function openViewer(fig,editable){const id=fig.dataset.img;const v=document.crea
    x.translate(c.width,0);x.rotate(Math.PI/2);x.drawImage(i,0,0);const b=await new Promise(r=>c.toBlob(r,'image/jpeg',.85));await IDB.put(id,b);
    if(IMGURL[id])URL.revokeObjectURL(IMGURL[id]);delete IMGURL[id];const u=await imgURL(id);im.src=u;document.querySelectorAll(`[data-img="${id}"] img`).forEach(x=>x.src=u)}}}
 document.addEventListener('click',e=>{const f=e.target.closest('figure.sheet,.fimgs [data-img]');if(!f)return;e.preventDefault();openViewer(f,!!f.closest('#ed'))});
-setTimeout(async()=>{try{const used=new Set();D.subs.forEach(s=>s.notes.forEach(n=>(n.html||'').replace(/data-img="([^"]+)"/g,(m,k)=>used.add(k))));
+setTimeout(async()=>{try{const used=new Set();D.subs.forEach(s=>s.notes.forEach(n=>{(n.html||'').replace(/data-img="([^"]+)"/g,(m,k)=>used.add(k));(n.pages||[]).forEach(p=>used.add(p.img))}));
  const ks=await IDB.keys();ks.forEach(k=>{if(!used.has(k))IDB.del(k)})}catch(e){}},10000);
+
+
+/* ---------- Feuille modifiable : la vraie feuille scannée, avec son texte modifiable par-dessus ---------- */
+const SH={mode:'write',sel:null,color:'#111111',fs:1,hist:[],ocr:{},nid:null};
+const SHCOL=[['#111111','Noir'],['#1d4ed8','Bleu'],['#dc2626','Rouge'],['#15803d','Vert']],HL_C='rgba(255,214,10,.45)';
+const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+function sheetInput(){let i=document.getElementById('fin-sheet');if(!i){i=document.createElement('input');i.type='file';i.accept='image/*';i.id='fin-sheet';i.style.display='none';i.onchange=()=>onSheetFile(i);document.body.appendChild(i)}return i}
+let sheetTarget=null;
+function scanSheet(sid,nid){if(!subOf(sid))return;sheetTarget={sid,nid};sheetInput().click()}
+function scanPick(btn){if(!D.subs.length)return subModal();pop(btn,'<div class="lab">Feuille de quelle matière ?</div>'+D.subs.map(s=>`<button class="opt" data-s="${s.id}">${s.emoji} ${E(s.name)}</button>`).join(''),b=>scanSheet(b.dataset.s))}
+async function onSheetFile(inp){const f=inp.files[0];inp.value='';const tg=sheetTarget;if(!f||!tg)return;
+ let img;try{img=await loadImg(f)}catch(e){toast('Impossible de lire cette photo');return}
+ const k=Math.min(1,2600/Math.max(img.naturalWidth,img.naturalHeight)),c0=document.createElement('canvas');c0.width=Math.round(img.naturalWidth*k);c0.height=Math.round(img.naturalHeight*k);
+ c0.getContext('2d').drawImage(img,0,0,c0.width,c0.height);
+ cropModal(c0,async r=>{toast('Nettoyage de la feuille…');try{addPage(tg,await makePage(c0,r))}catch(e){toast('Problème pendant le scan, réessaie')}})}
+function autoBounds(c){const w=80,h=Math.max(8,Math.round(80*c.height/c.width)),s=document.createElement('canvas');s.width=w;s.height=h;const x=s.getContext('2d');x.drawImage(c,0,0,w,h);
+ const d=x.getImageData(0,0,w,h).data,rows=[],cols=new Array(w).fill(0);
+ for(let y=0;y<h;y++){let t=0;for(let i=0;i<w;i++){const p=(y*w+i)*4,v=.299*d[p]+.587*d[p+1]+.114*d[p+2];t+=v;cols[i]+=v/h}rows.push(t/w)}
+ const bnd=a=>{const mx=Math.max(...a),mn=Math.min(...a);if(mx-mn<25)return[0,a.length-1];const th=mn+(mx-mn)*.55;let i=0,j=a.length-1;while(i<j&&a[i]<th)i++;while(j>i&&a[j]<th)j--;return[i,j]};
+ const [y0,y1]=bnd(rows),[x0,x1]=bnd(cols);let r={x:Math.max(0,(x0-.3)/w),y:Math.max(0,(y0-.3)/h)};r.w=Math.min(1,(x1+1.3)/w)-r.x;r.h=Math.min(1,(y1+1.3)/h)-r.y;
+ return r.w*r.h<.2?{x:0,y:0,w:1,h:1}:r}
+function cropModal(c0,done){const r=autoBounds(c0),bg=document.createElement('div');bg.className='modal-bg';
+ bg.innerHTML=`<div class="crop"><div class="modal-h"><h3>Cadre ta feuille</h3><button class="icon-btn" data-x aria-label="Fermer">${ic('x')}</button></div>
+ <p class="rm" style="margin:-6px 0 12px">Tire les ronds blancs pour garder seulement la feuille.</p>
+ <div class="crop-area" id="cra"><div class="crop-box" id="crb"><i data-c="nw"></i><i data-c="ne"></i><i data-c="sw"></i><i data-c="se"></i></div></div>
+ <div class="row-end" style="margin-top:14px"><button class="btn ghost" data-all>Toute la photo</button><button class="btn" data-ok>✓ Valider</button></div></div>`;
+ document.body.appendChild(bg);closePop();
+ const area=bg.querySelector('#cra'),bx=bg.querySelector('#crb'),pv=document.createElement('canvas'),kk=Math.min(1,1000/Math.max(c0.width,c0.height));
+ pv.width=Math.round(c0.width*kk);pv.height=Math.round(c0.height*kk);pv.getContext('2d').drawImage(c0,0,0,pv.width,pv.height);area.prepend(pv);
+ area.style.width=Math.max(200,Math.min(600,innerHeight*.58*c0.width/c0.height,innerWidth-72))+'px';
+ const draw=()=>{bx.style.left=r.x*100+'%';bx.style.top=r.y*100+'%';bx.style.width=r.w*100+'%';bx.style.height=r.h*100+'%'};draw();
+ let dc=null;
+ area.addEventListener('pointerdown',e=>{const h=e.target.closest('i[data-c]');if(!h)return;e.preventDefault();dc=h.dataset.c;area.setPointerCapture(e.pointerId)});
+ area.addEventListener('pointermove',e=>{if(!dc)return;const R=area.getBoundingClientRect(),x=Math.min(1,Math.max(0,(e.clientX-R.left)/R.width)),y=Math.min(1,Math.max(0,(e.clientY-R.top)/R.height));
+  let x0=r.x,y0=r.y,x1=r.x+r.w,y1=r.y+r.h;if(dc.includes('w'))x0=Math.min(x,x1-.1);if(dc.includes('e'))x1=Math.max(x,x0+.1);if(dc.includes('n'))y0=Math.min(y,y1-.1);if(dc.includes('s'))y1=Math.max(y,y0+.1);
+  Object.assign(r,{x:x0,y:y0,w:x1-x0,h:y1-y0});draw()});
+ const end=()=>{dc=null};area.addEventListener('pointerup',end);area.addEventListener('pointercancel',end);
+ const close=()=>{bg.classList.add('closing');setTimeout(()=>bg.remove(),140)};
+ bg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-x'))close();
+  if(b.hasAttribute('data-all')){Object.assign(r,{x:0,y:0,w:1,h:1});draw()}if(b.hasAttribute('data-ok')){close();done(r)}})}
+function cleanScan(c){/* blanchit le papier et enlève les ombres, sans toucher aux images ni aux couleurs */
+ const w=c.width,h=c.height,x=c.getContext('2d'),im=x.getImageData(0,0,w,h),p=im.data,cs=Math.ceil(Math.max(w,h)/14),gx=Math.ceil(w/cs),gy=Math.ceil(h/cs);
+ const cell=new Float32Array(gx*gy*3),hist=new Uint32Array(256*3);
+ for(let cy=0;cy<gy;cy++)for(let cx=0;cx<gx;cx++){hist.fill(0);let n=0;const x1=Math.min(w,(cx+1)*cs),y1=Math.min(h,(cy+1)*cs);
+  for(let yy=cy*cs;yy<y1;yy+=2)for(let xx=cx*cs;xx<x1;xx+=2){const k=(yy*w+xx)*4;hist[p[k]]++;hist[256+p[k+1]]++;hist[512+p[k+2]]++;n++}
+  for(let ch=0;ch<3;ch++){let acc=0,v=255;const lim=n*.9;for(let b=0;b<256;b++){acc+=hist[ch*256+b];if(acc>=lim){v=b;break}}cell[(cy*gx+cx)*3+ch]=Math.max(v,60)}}
+ const dil=new Float32Array(cell.length);
+ for(let cy=0;cy<gy;cy++)for(let cx=0;cx<gx;cx++)for(let ch=0;ch<3;ch++){let m=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const yy=cy+dy,xx=cx+dx;if(yy>=0&&yy<gy&&xx>=0&&xx<gx)m=Math.max(m,cell[(yy*gx+xx)*3+ch])}dil[(cy*gx+cx)*3+ch]=m}
+ const sm=document.createElement('canvas');sm.width=gx;sm.height=gy;const sx=sm.getContext('2d'),sd=sx.createImageData(gx,gy);
+ for(let k=0;k<gx*gy;k++){sd.data[k*4]=dil[k*3];sd.data[k*4+1]=dil[k*3+1];sd.data[k*4+2]=dil[k*3+2];sd.data[k*4+3]=255}sx.putImageData(sd,0,0);
+ const bc=document.createElement('canvas');bc.width=w;bc.height=h;const bx=bc.getContext('2d');bx.imageSmoothingQuality='high';bx.drawImage(sm,0,0,gx*cs,gy*cs);
+ const bg=bx.getImageData(0,0,w,h).data,LUT=new Uint8ClampedArray(256);for(let v=0;v<256;v++)LUT[v]=v>=238?255:Math.round(255*Math.pow(v/255,1.45));
+ for(let k=0;k<p.length;k+=4)for(let ch=0;ch<3;ch++)p[k+ch]=LUT[Math.min(255,Math.round(p[k+ch]*255*1.04/Math.max(bg[k+ch],1)))];
+ x.putImageData(im,0,0)}
+async function makePage(c0,r){const sx=Math.round(r.x*c0.width),sy=Math.round(r.y*c0.height),sw=Math.round(r.w*c0.width),sh=Math.round(r.h*c0.height),k=Math.min(1,2200/Math.max(sw,sh)),W=Math.round(sw*k),H=Math.round(sh*k);
+ const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(c0,sx,sy,sw,sh,0,0,W,H);cleanScan(c);
+ const blob=await new Promise(res=>c.toBlob(res,'image/jpeg',.86)),id='img'+uid();await IDB.put(id,blob);return {id:uid(),img:id,W,H,items:[],lines:null}}
+function addPage(tg,page){const s=subOf(tg.sid);if(!s)return;let n=tg.nid&&s.notes.find(x=>x.id==tg.nid);
+ if(n)n.pages.push(page);else{n={id:uid(),type:'sheet',title:'Feuille du '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long'}),pages:[page],body:'',html:'',date:Date.now(),edited:Date.now()};s.notes.push(n)}
+ sheetSync(n);save();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+ if(view.v=='note'&&view.n==n.id){animate=false;render()}else go('note',s.id,n.id);
+ toast(tg.nid?'Page ajoutée ✓':'Feuille prête ✓');runOcr(n,page)}
+function sheetSync(n){const parts=[];(n.pages||[]).forEach(p=>{[...(p.lines||[]).filter(l=>!l.used).map(l=>({y:l.y0,x:l.x0,t:l.t})),...p.items.filter(i=>i.t=='text'&&i.text.trim()).map(i=>({y:i.y,x:i.x,t:i.text}))]
+  .sort((a,b)=>a.y-b.y||a.x-b.x).forEach(l=>parts.push(l.t))});
+ n.body=parts.join('\n');n.html=(n.pages||[]).map(p=>`<figure class="sheet" data-img="${p.img}"></figure>`).join('')+(n.body?toHtml(n.body):'');n.edited=Date.now()}
+
+/* lecture du texte (Tesseract, téléchargé la première fois) */
+function loadTess(){return window.Tesseract?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src=TESS;s.onload=res;s.onerror=()=>rej(new Error('net'));document.head.appendChild(s);setTimeout(()=>rej(new Error('lent')),30000)})}
+async function runOcr(n,page){if(SH.ocr[page.id]&&!SH.ocr[page.id].err)return;SH.ocr[page.id]={p:0};shStatus();
+ try{await loadTess();const blob=await IDB.get(page.img);
+  const w=await Tesseract.createWorker('fra',1,{logger:m=>{if(m.status=='recognizing text'&&SH.ocr[page.id]){SH.ocr[page.id].p=m.progress;shStatus()}}});
+  const {data}=await w.recognize(blob,{},{text:true,blocks:true});await w.terminate();
+  let raw=data.lines;if(!raw||!raw.length)raw=(data.blocks||[]).flatMap(b=>(b.paragraphs||[]).flatMap(q=>q.lines||[]));
+  page.lines=(raw||[]).map(l=>({t:String(l.text||'').replace(/\s+/g,' ').trim(),c:l.confidence,x0:l.bbox.x0,y0:l.bbox.y0,x1:l.bbox.x1,y1:l.bbox.y1}))
+   .filter(l=>l.t.length>1&&l.c>35&&/[A-Za-zÀ-ÿ0-9]/.test(l.t)&&l.y1>l.y0).map(({c,...l})=>l);
+  await lineStyle(page);delete SH.ocr[page.id];sheetSync(n);save();
+  if(view.v=='note'&&curNote===n)shRerender();shStatus();toast(`✓ Texte lu : ${page.lines.length} ligne${page.lines.length>1?'s':''} modifiable${page.lines.length>1?'s':''}`)}
+ catch(e){SH.ocr[page.id]={err:1};shStatus()}}
+async function lineStyle(page){try{const img=await loadImg(await IDB.get(page.img)),c=document.createElement('canvas');c.width=page.W;c.height=page.H;const x=c.getContext('2d');x.drawImage(img,0,0,page.W,page.H);
+ const ds=page.lines.map(l=>{const w=Math.max(1,Math.round(l.x1-l.x0)),h=Math.max(1,Math.round(l.y1-l.y0)),d=x.getImageData(Math.round(l.x0),Math.round(l.y0),w,h).data;let dark=0,runs=0;
+  for(let yy=0;yy<h;yy++){let prev=false;for(let xx=0;xx<w;xx++){const i=(yy*w+xx)*4,on=(.299*d[i]+.587*d[i+1]+.114*d[i+2])<120;if(on){dark++;if(!prev)runs++}prev=on}}return runs>20&&w>h*3?dark/runs/h:null});
+ const v=ds.filter(z=>z!=null).sort((a,b)=>a-b),med=v[Math.floor(v.length*.35)]||0;page.lines.forEach((l,i)=>{if(med&&ds[i]!=null&&ds[i]>med*1.28)l.b=1});page.sw=ds}catch(e){}}
+const MC=document.createElement('canvas').getContext('2d');
+function fitSize(txt,bold,width,maxS){MC.font=`${bold?'bold ':''}100px Arial,Helvetica,sans-serif`;const w=MC.measureText(txt).width;return w>0?Math.min(maxS,width/w*100):maxS}
+function shRetry(){const n=curNote;if(!n)return;n.pages.forEach(p=>{if(p.lines==null){delete SH.ocr[p.id];runOcr(n,p)}})}
+function shStatus(){const el=document.getElementById('shst'),n=curNote;if(!el||!n||n.type!='sheet')return;
+ const run=n.pages.filter(p=>SH.ocr[p.id]&&!SH.ocr[p.id].err),err=n.pages.some(p=>SH.ocr[p.id]&&SH.ocr[p.id].err);
+ const tips={write:'✏️ Touche une ligne encadrée en bleu pour la corriger, ou n\'importe où pour écrire (une réponse par exemple).',mask:'⬜ Glisse ton doigt sur une zone pour l\'effacer, comme du blanco.',hl:'🖍️ Glisse ton doigt sur une zone pour la surligner.',pen:'✍️ Écris ou dessine avec ton doigt ou ton Apple Pencil.',move:'✋ Fais glisser un élément pour le déplacer. Tire son bord droit pour l\'agrandir.'};
+ el.innerHTML=run.length?`<span class="spin"></span>🔍 Lecture du texte… ${Math.round(run.reduce((s,p)=>s+SH.ocr[p.id].p,0)/run.length*100)} % — tu peux déjà écrire, effacer ou surligner.`
+  :err?`⚠️ Je n'ai pas pu lire le texte (il faut internet la première fois). <button onclick="shRetry()">Réessayer</button> <span>${tips[SH.mode]}</span>`:tips[SH.mode]}
+
+/* affichage */
+const pct=(v,t)=>(v/t*100).toFixed(3)+'%';
+const shBox=(o,p)=>`left:${pct(o.x,p.W)};top:${pct(o.y,p.H)};width:${pct(o.w,p.W)};height:${pct(o.h,p.H)}`;
+const penD=pts=>'M'+pts.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' L');
+function itemHtml(o,p){const sel=SH.sel&&SH.sel.id==o.id?' sel':'';
+ if(o.t=='text')return `<div class="sh-it sh-txt${o.bg?' sh-white':''}${sel}" data-i="${o.id}" ${SH.mode=='move'?'':'contenteditable="true"'} spellcheck="false" autocapitalize="sentences" style="left:${pct(o.x,p.W)};top:${pct(o.y,p.H)};width:${pct(o.w,p.W)};min-height:${pct(o.h,p.H)};font-size:${(o.size/p.W*100).toFixed(3)}cqw;color:${o.color};${o.bold?'font-weight:700':''}">${E(o.text)}</div>`;
+ if(o.t=='mask')return `<div class="sh-it sh-mask${sel}" data-i="${o.id}" style="${shBox(o,p)}"></div>`;
+ if(o.t=='hl')return `<div class="sh-it sh-hl${sel}" data-i="${o.id}" style="${shBox(o,p)}"></div>`;return ''}
+function pageHtml(p,i){return `<div class="spage" data-p="${i}" style="aspect-ratio:${p.W}/${p.H};--ar:${(p.W/p.H).toFixed(4)}"><img data-img="${p.img}" alt="Page ${i+1}" draggable="false">
+ ${p.items.filter(o=>o.t!='pen'&&o.t!='text').map(o=>itemHtml(o,p)).join('')}
+ <svg class="sh-ink" viewBox="0 0 ${p.W} ${p.H}" preserveAspectRatio="none">${p.items.filter(o=>o.t=='pen').map(o=>`<path d="${penD(o.pts)}" stroke="${o.color}" stroke-width="${o.w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}</svg>
+ ${(p.lines||[]).map((l,k)=>l.used?'':`<div class="sh-line" data-l="${k}" style="${shBox({x:l.x0-5,y:l.y0-4,w:l.x1-l.x0+10,h:l.y1-l.y0+8},p)}"></div>`).join('')}
+ ${p.items.filter(o=>o.t=='text').map(o=>itemHtml(o,p)).join('')}
+ ${(curNote&&curNote.pages.length>1)?`<button class="sh-pdel noprint" onclick="shDelPage(${i})" title="Retirer cette page">${ic('trash')}</button>`:''}</div>`}
+function shRerender(){const P=document.getElementById('shp');if(!P||!curNote)return;P.innerHTML=curNote.pages.map((p,i)=>pageHtml(p,i)).join('');hydrate(P)}
+const shPageOf=o=>curNote.pages.find(p=>p.items.includes(o));
+const shFind=id=>{for(const p of curNote.pages){const o=p.items.find(i=>i.id==id);if(o)return o}return null};
+const shItem=()=>SH.sel?shFind(SH.sel.id):null;
+function shSel(sel){SH.sel=sel;document.querySelectorAll('.sh-it.sel').forEach(x=>x.classList.remove('sel'));if(sel)document.querySelector(`.sh-it[data-i="${sel.id}"]`)?.classList.add('sel')}
+function shSnap(){SH.hist.push(JSON.stringify(curNote.pages));if(SH.hist.length>40)SH.hist.shift()}
+function shCommit(){sheetSync(curNote);dirty();shRerender()}
+function shUndo(){if(!SH.hist.length){toast('Rien à annuler');return}curNote.pages=JSON.parse(SH.hist.pop());SH.sel=null;shCommit();toast('Annulé')}
+function shDelPage(i){if(!confirm('Retirer cette page de la feuille ?'))return;shSnap();curNote.pages.splice(i,1);shCommit();toast('Page retirée')}
+function shFocus(id,all){const el=document.querySelector(`.sh-txt[data-i="${id}"]`);if(!el)return;el.focus();const r=document.createRange();r.selectNodeContents(el);if(!all)r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+function shLineH(p){const hs=(p.lines||[]).map(l=>l.y1-l.y0).sort((a,b)=>a-b);return hs.length?hs[hs.length>>1]:p.W/48}
+
+function sheetView(s,n){M.dataset.sheet='1';if(SH.nid!=n.id){SH.hist=[];SH.sel=null;SH.nid=n.id}
+ const T=(m,l,t)=>`<button class="tb-b ${SH.mode==m?'on':''}" data-m="${m}" title="${t}">${l}</button>`;
+ M.innerHTML=`<div class="editor-bar"><button class="icon-btn" onclick="go('sub','${s.id}')" aria-label="Retour">${ic('back')}</button>
+ <span class="crumb"><span class="dot" style="width:22px;height:22px;font-size:12px;background:${s.color}22">${s.emoji}</span>${E(s.name)}</span><span class="saved" id="sv">Enregistré</span>
+ <button class="btn sm ghost" onclick="go('fiche','${s.id}','${n.id}')">🧠 Fiche</button><button class="btn sm ghost" onclick="exportPDF('note')">📄 PDF</button>
+ <button class="icon-btn" onclick="delNote('${s.id}','${n.id}')" aria-label="Supprimer">${ic('trash')}</button></div>
+ <div class="print-head"><span>${s.emoji} ${E(s.name)}</span><span>${fmtT(n.date)}</span></div>
+ <input class="title-in" id="nt" value="${E(n.title)}" placeholder="Titre de la feuille">
+ <div class="tb" id="shtb">${T('write','✏️ Écrire','Corriger une ligne ou écrire')}${T('mask','⬜ Effacer','Effacer une zone')}${T('hl','🖍️ Surligner','Surligner une zone')}${T('pen','✍️ Stylo','Écrire à la main')}${T('move','✋ Déplacer','Déplacer ou agrandir')}<span class="tb-sep"></span>
+  <button class="tb-b" data-a="bold" title="Gras"><b>B</b></button><button class="tb-b" data-a="sm" title="Texte plus petit">A−</button><button class="tb-b" data-a="lg" title="Texte plus grand">A+</button>
+  ${SHCOL.map(([c,l])=>`<button class="tb-b sh-c ${SH.color==c?'on':''}" data-c="${c}" title="${l}" aria-label="${l}"><i style="background:${c}"></i></button>`).join('')}<span class="tb-sep"></span>
+  <button class="tb-b" data-a="undo" title="Annuler">${ic('undo')}</button><button class="tb-b" data-a="del" title="Supprimer l'élément choisi">${ic('trash')}</button></div>
+ <div class="sh-st noprint" id="shst"></div>
+ <div class="sh-pages" id="shp" data-mode="${SH.mode}">${n.pages.map((p,i)=>pageHtml(p,i)).join('')}</div>
+ <div class="noprint" style="margin-top:16px;display:flex;justify-content:center"><button class="btn ghost" onclick="scanSheet('${s.id}','${n.id}')">📷 Ajouter une page</button></div>`;
+ const nt=$('#nt');nt.oninput=()=>{n.title=nt.value.trim()||'Sans titre';dirty()};
+ const tb=$('#shtb');tb.addEventListener('mousedown',e=>e.preventDefault());
+ tb.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.m){SH.mode=b.dataset.m;tb.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x==b));$('#shp').dataset.mode=SH.mode;SH.sel=null;shRerender();shStatus();return}
+  if(b.dataset.c){SH.color=b.dataset.c;tb.querySelectorAll('.sh-c').forEach(x=>x.classList.toggle('on',x==b));const it=shItem();if(it&&it.t=='text'){shSnap();it.color=SH.color;shCommit()}return}
+  const a=b.dataset.a;
+  if(a=='undo')shUndo();
+  if(a=='bold'){const it=shItem();if(it&&it.t=='text'){shSnap();it.bold=it.bold?0:1;shCommit();shFocus(it.id)}else toast('Touche d\'abord un texte');return}
+  if(a=='del'){const it=shItem();if(!it){toast('Touche d\'abord un texte, ou une zone en mode ✋ Déplacer');return}shSnap();const p=shPageOf(it);p.items=p.items.filter(i=>i!==it);SH.sel=null;shCommit()}
+  if(a=='sm'||a=='lg'){const f=a=='lg'?1.12:1/1.12,it=shItem();if(it&&it.t=='text'){shSnap();it.size=Math.max(6,it.size*f);shCommit();shFocus(it.id)}else{SH.fs=Math.max(.4,Math.min(3,SH.fs*f));toast('Taille des nouveaux textes : '+Math.round(SH.fs*100)+' %')}}};
+ const P=$('#shp');let drag=null;
+ const pt=(e,pg)=>{const r=pg.getBoundingClientRect(),p=curNote.pages[+pg.dataset.p];return{x:(e.clientX-r.left)/r.width*p.W,y:(e.clientY-r.top)/r.height*p.H,p}};
+ P.addEventListener('pointerdown',e=>{const pg=e.target.closest('.spage');if(!pg||e.target.closest('.sh-pdel'))return;const pi=+pg.dataset.p,{x,y,p}=pt(e,pg),it=e.target.closest('.sh-it'),ln=e.target.closest('.sh-line'),m=SH.mode;
+  if(m=='move'){if(!it){shSel(null);return}e.preventDefault();const o=p.items.find(i=>i.id==it.dataset.i);if(!o)return;shSel({pi,id:o.id});shSnap();
+   drag={k:e.clientX>it.getBoundingClientRect().right-28?'rs':'mv',o,pi,pg,el:it,x0:x,y0:y,ox:o.x,oy:o.y,ow:o.w,oh:o.h};P.setPointerCapture(e.pointerId);return}
+  if(m=='write'){if(it&&it.classList.contains('sh-txt')){shSel({pi,id:it.dataset.i});return}
+   e.preventDefault();shSnap();
+   if(ln){const l=p.lines[+ln.dataset.l],h=l.y1-l.y0;l.used=1;const o={id:uid(),t:'text',x:l.x0-4,y:l.y0-Math.round(h*.2),w:Math.max(l.x1-l.x0+h,p.W*.96-l.x0),h:h*1.4,size:fitSize(l.t,l.b,l.x1-l.x0,h*.95),bold:l.b?1:0,text:l.t,bg:1,color:'#111111'};
+    p.items.push(o);SH.sel={pi,id:o.id};shCommit();shFocus(o.id,false);return}
+   const h=shLineH(p)*SH.fs,o={id:uid(),t:'text',x:Math.max(0,x-2),y:Math.max(0,y-h*.75),w:Math.max(h*4,Math.min(p.W-x-8,p.W*.62)),h:h*1.35,size:h*.95,text:'',bg:0,color:SH.color};
+   p.items.push(o);SH.sel={pi,id:o.id};shCommit();shFocus(o.id);return}
+  if(m=='mask'||m=='hl'){e.preventDefault();const el=document.createElement('div');el.className='sh-it tmp '+(m=='mask'?'sh-mask':'sh-hl');pg.appendChild(el);drag={k:'rect',m,pi,pg,el,x0:x,y0:y};P.setPointerCapture(e.pointerId);return}
+  if(m=='pen'){e.preventDefault();const svg=pg.querySelector('.sh-ink'),path=document.createElementNS('http://www.w3.org/2000/svg','path'),w=Math.max(2.5,p.W/380);
+   path.setAttribute('stroke',SH.color);path.setAttribute('stroke-width',w);path.setAttribute('fill','none');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.appendChild(path);
+   drag={k:'pen',pi,pg,pts:[[x,y]],path,w};path.setAttribute('d',penD(drag.pts));P.setPointerCapture(e.pointerId)}});
+ P.addEventListener('pointermove',e=>{if(!drag)return;const {x,y}=pt(e,drag.pg),p=curNote.pages[drag.pi];
+  if(drag.k=='rect'){const b={x:Math.min(drag.x0,x),y:Math.min(drag.y0,y),w:Math.abs(x-drag.x0),h:Math.abs(y-drag.y0)};drag.b=b;drag.el.setAttribute('style',shBox(b,p))}
+  if(drag.k=='pen'){const l=drag.pts[drag.pts.length-1];if(Math.hypot(x-l[0],y-l[1])>1.5){drag.pts.push([x,y]);drag.path.setAttribute('d',penD(drag.pts))}}
+  if(drag.k=='mv'){const o=drag.o;o.x=drag.ox+(x-drag.x0);o.y=drag.oy+(y-drag.y0);drag.el.style.left=pct(o.x,p.W);drag.el.style.top=pct(o.y,p.H)}
+  if(drag.k=='rs'){const o=drag.o;o.w=Math.max(20,drag.ow+(x-drag.x0));drag.el.style.width=pct(o.w,p.W);if(o.t!='text'){o.h=Math.max(8,drag.oh+(y-drag.y0));drag.el.style.height=pct(o.h,p.H)}}});
+ const up=()=>{if(!drag)return;const d=drag;drag=null;const p=curNote.pages[d.pi];
+  if(d.k=='rect'){d.el.remove();if(d.b&&d.b.w>6&&d.b.h>6){shSnap();p.items.push({id:uid(),t:d.m,...d.b});shCommit()}}
+  if(d.k=='pen'){if(d.pts.length>1){shSnap();p.items.push({id:uid(),t:'pen',pts:d.pts,color:SH.color,w:d.w});shCommit()}else d.path.remove()}
+  if(d.k=='mv'||d.k=='rs')shCommit()};
+ P.addEventListener('pointerup',up);P.addEventListener('pointercancel',up);
+ P.addEventListener('input',e=>{const el=e.target.closest('.sh-txt');if(!el)return;const o=shFind(el.dataset.i);if(o){o.text=el.innerText.replace(/\n$/,'');sheetSync(curNote);dirty()}});
+ P.addEventListener('focusout',e=>{const el=e.target.closest('.sh-txt');if(!el)return;const o=shFind(el.dataset.i);if(o&&!o.text.trim()&&!o.bg){const p=shPageOf(o);p.items=p.items.filter(i=>i!==o);sheetSync(curNote);dirty();el.remove()}});
+ shStatus();n.pages.forEach(p=>{if(p.lines==null&&!SH.ocr[p.id])runOcr(n,p)})}
 
 /* ---------- Calculatrice ---------- */
 let CS={deg:true,hist:[],ans:0,pos:null};try{Object.assign(CS,JSON.parse(localStorage.getItem('mescours-calc')||'{}'))}catch(e){}
